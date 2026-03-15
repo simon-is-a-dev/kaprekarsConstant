@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6174</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0e0e0e;
+  --red: #c0392b;
+  --red-dim: rgba(192,57,43,0.12);
+  --off-white: #f0ede8;
+  --muted: rgba(240,237,232,0.25);
+  --faint: rgba(240,237,232,0.07);
+}
+
+body {
+  background: var(--black);
+  color: var(--off-white);
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 24px 100px;
+  overflow-x: hidden;
+}
+
+/* ── background line animation ── */
+.bg-lines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.line {
+  position: absolute;
+  background: rgba(240,237,232,0.045);
+  border-radius: 1px;
+}
+
+/* horizontal lines drifting */
+.line-h {
+  left: -100%;
+  width: 300%;
+  height: 1px;
+  animation: drift-h linear infinite;
+}
+.line-h:nth-child(1)  { top: 12%; animation-duration: 28s; animation-delay: 0s;    opacity: 0.6; }
+.line-h:nth-child(2)  { top: 27%; animation-duration: 42s; animation-delay: -8s;   opacity: 0.35; }
+.line-h:nth-child(3)  { top: 43%; animation-duration: 35s; animation-delay: -15s;  opacity: 0.5; }
+.line-h:nth-child(4)  { top: 61%; animation-duration: 50s; animation-delay: -22s;  opacity: 0.3; }
+.line-h:nth-child(5)  { top: 78%; animation-duration: 32s; animation-delay: -5s;   opacity: 0.45; }
+.line-h:nth-child(6)  { top: 91%; animation-duration: 46s; animation-delay: -30s;  opacity: 0.25; }
+
+/* vertical lines drifting */
+.line-v {
+  top: -100%;
+  height: 300%;
+  width: 1px;
+  animation: drift-v linear infinite;
+}
+.line-v:nth-child(7)  { left: 8%;  animation-duration: 38s; animation-delay: -3s;  opacity: 0.4; }
+.line-v:nth-child(8)  { left: 22%; animation-duration: 55s; animation-delay: -18s; opacity: 0.25; }
+.line-v:nth-child(9)  { left: 38%; animation-duration: 44s; animation-delay: -10s; opacity: 0.35; }
+.line-v:nth-child(10) { left: 55%; animation-duration: 30s; animation-delay: -25s; opacity: 0.45; }
+.line-v:nth-child(11) { left: 70%; animation-duration: 48s; animation-delay: -7s;  opacity: 0.3; }
+.line-v:nth-child(12) { left: 88%; animation-duration: 36s; animation-delay: -40s; opacity: 0.2; }
+
+@keyframes drift-h {
+  from { transform: translateX(0); }
+  to   { transform: translateX(33.33%); }
+}
+@keyframes drift-v {
+  from { transform: translateY(0); }
+  to   { transform: translateY(33.33%); }
+}
+
+/* ── layout ── */
+.page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── header ── */
+.heading {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.heading h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(5rem, 20vw, 9rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--off-white);
+}
+
+.heading h1 span {
+  color: var(--red);
+}
+
+.heading p {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ── input ── */
+.input-row {
+  display: flex;
+  width: 100%;
+  max-width: 320px;
+  border-bottom: 1px solid rgba(240,237,232,0.2);
+  margin-bottom: 4px;
+  transition: border-color 0.2s;
+}
+.input-row:focus-within {
+  border-color: var(--red);
+}
+
+#numInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--off-white);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  padding: 8px 0;
+  outline: none;
+  text-align: center;
+  -moz-appearance: textfield;
+  letter-spacing: 0.1em;
+  width: 0;
+}
+#numInput::-webkit-outer-spin-button,
+#numInput::-webkit-inner-spin-button { -webkit-appearance: none; }
+#numInput::placeholder { color: rgba(240,237,232,0.18); font-size: 1.1rem; letter-spacing: 0.05em; }
+
+#runBtn {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 8px 0 8px 16px;
+  transition: opacity 0.15s;
+}
+#runBtn:hover { opacity: 0.7; }
+#runBtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.err {
+  font-size: 0.62rem;
+  color: var(--red);
+  letter-spacing: 0.08em;
+  min-height: 16px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* ── stage ── */
+#stage {
+  width: 100%;
+  margin-top: 64px;
+  display: none;
+}
+
+.cycle-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* the thin red progress line */
+.prog-line {
+  width: 100%;
+  height: 1px;
+  background: rgba(240,237,232,0.08);
+  margin-bottom: 40px;
+  position: relative;
+}
+.prog-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 1px;
+  background: var(--red);
+  width: 0%;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* the math */
+.math {
+  text-align: center;
+}
+
+.equation {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 12vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.eq-big   { color: var(--off-white); }
+.eq-op    { color: rgba(240,237,232,0.2); font-size: 0.5em; }
+.eq-small { color: rgba(240,237,232,0.35); }
+.eq-result {
+  color: var(--red);
+  transition: opacity 0.25s;
+}
+
+.digit-hint {
+  margin-top: 18px;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+}
+
+/* fade transition */
+.eq-fade {
+  animation: eq-in 0.3s ease forwards;
+}
+@keyframes eq-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── win ── */
+#win {
+  display: none;
+  margin-top: 48px;
+  text-align: center;
+  animation: eq-in 0.5s ease forwards;
+}
+
+.win-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(5rem, 18vw, 9rem);
+  font-weight: 600;
+  color: var(--red);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.win-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.win-cycles {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  color: rgba(240,237,232,0.4);
+  letter-spacing: 0.1em;
+}
+
+/* ── no converge ── */
+#noconv {
+  display: none;
+  margin-top: 32px;
+  font-size: 0.68rem;
+  color: rgba(192,57,43,0.7);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  text-align: center;
+  animation: eq-in 0.4s ease forwards;
+}
+
+/* ── tribute ── */
+.tribute {
+  margin-top: 100px;
+  width: 100%;
+  padding-top: 32px;
+  border-top: 1px solid rgba(240,237,232,0.08);
+}
+
+.trib-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--off-white);
+  letter-spacing: 0.02em;
+}
+.trib-dates {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+.trib-body {
+  font-size: 0.72rem;
+  line-height: 2;
+  color: rgba(240,237,232,0.38);
+}
+.trib-body em { color: var(--red); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="bg-lines">
+  <div class="line line-h"></div>
+  <div class="line line-h"></div>
+  <div class="line line-h"></div>
+  <div class="line line-h"></div>
+  <div class="line line-h"></div>
+  <div class="line line-h"></div>
+  <div class="line line-v"></div>
+  <div class="line line-v"></div>
+  <div class="line line-v"></div>
+  <div class="line line-v"></div>
+  <div class="line line-v"></div>
+  <div class="line line-v"></div>
+</div>
+
+<div class="page">
+
+  <div class="heading">
+    <h1>61<span>7</span>4</h1>
+    <p>Kaprekar's Constant</p>
+  </div>
+
+  <div class="input-row">
+    <input type="number" id="numInput" placeholder="any 4-digit number" min="1000" max="9999">
+    <button id="runBtn">run →</button>
+  </div>
+  <p class="err" id="err"></p>
+
+  <div id="stage">
+    <div class="cycle-meta">
+      <span id="cycleLabel">cycle 1</span>
+      <span id="cycleOf"></span>
+    </div>
+    <div class="prog-line"><div class="prog-fill" id="progFill"></div></div>
+
+    <div class="math" id="mathBlock">
+      <div class="equation" id="equation">
+        <span class="eq-big" id="eBig"></span>
+        <span class="eq-op">−</span>
+        <span class="eq-small" id="eSmall"></span>
+        <span class="eq-op">=</span>
+        <span class="eq-result" id="eResult"></span>
+      </div>
+      <div class="digit-hint" id="hint"></div>
+    </div>
+
+    <div id="win">
+      <div class="win-number">6174</div>
+      <p class="win-sub">Kaprekar's Constant</p>
+      <p class="win-cycles" id="winCycles"></p>
+    </div>
+
+    <div id="noconv"></div>
+  </div>
+
+  <div class="tribute">
+    <div class="trib-name">D. R. Kaprekar</div>
+    <div class="trib-dates">1905 – 1986 &nbsp;·&nbsp; Devlali, India</div>
+    <p class="trib-body">
+      A schoolteacher who spent his evenings chasing numerical curiosities purely for the joy of it —
+      no degree, no funding, no institutional backing. His peers dismissed him.
+      He published in obscure journals anyway, describing <em>self-descriptive numbers</em>,
+      <em>Harshad numbers</em>, and the constant that bears his name.
+      Martin Gardner eventually wrote about him in Scientific American, and the world caught up.
+      He proved that mathematics is, at its heart, a form of play.
+    </p>
+  </div>
+
+</div>
+
+<script>
+const inp      = document.getElementById('numInput');
+const btn      = document.getElementById('runBtn');
+const errEl    = document.getElementById('err');
+const stage    = document.getElementById('stage');
+const cycLabel = document.getElementById('cycleLabel');
+const cycOf    = document.getElementById('cycleOf');
+const progFill = document.getElementById('progFill');
+const equation = document.getElementById('equation');
+const eBig     = document.getElementById('eBig');
+const eSmall   = document.getElementById('eSmall');
+const eResult  = document.getElementById('eResult');
+const hintEl   = document.getElementById('hint');
+const winEl    = document.getElementById('win');
+const winCyc   = document.getElementById('winCycles');
+const noconv   = document.getElementById('noconv');
+
+function pad(n) { return String(n).padStart(4, '0'); }
+
+function step(n) {
+  const d = pad(n).split('').map(Number);
+  const asc  = [...d].sort((a,b) => a-b);
+  const desc = [...d].sort((a,b) => b-a);
+  const big   = parseInt(desc.join(''));
+  const small = parseInt(asc.join(''));
+  return { big, small, result: big - small, desc: desc.join(''), asc: asc.join('') };
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function animateIn(el) {
+  el.classList.remove('eq-fade');
+  void el.offsetWidth;
+  el.classList.add('eq-fade');
+}
+
+async function run() {
+  errEl.textContent = '';
+  winEl.style.display = 'none';
+  noconv.style.display = 'none';
+  noconv.textContent = '';
+  progFill.style.width = '0%';
+
+  const num = parseInt(inp.value);
+  if (!inp.value || isNaN(num) || num < 1000 || num > 9999) {
+    errEl.textContent = 'enter a 4-digit number between 1000 and 9999';
+    return;
+  }
+  const digits = pad(num).split('');
+  if (digits.every(d => d === digits[0])) {
+    errEl.textContent = `${num} has all identical digits — try something else`;
+    return;
+  }
+
+  btn.disabled = true;
+  stage.style.display = 'block';
+  equation.style.display = 'flex';
+  hintEl.style.display = 'flex';
+
+  // pre-compute
+  const steps = [];
+  let cur = num;
+  for (let i = 0; i < 20; i++) {
+    const s = step(cur);
+    steps.push(s);
+    cur = s.result;
+    if (s.result === 6174 || s.result === 0) break;
+  }
+
+  const total = steps.length;
+
+  for (let i = 0; i < total; i++) {
+    const s = steps[i];
+    cycLabel.textContent = `cycle ${i + 1}`;
+    cycOf.textContent    = `of ${total}`;
+    progFill.style.width = `${((i + 1) / total) * 100}%`;
+
+    eBig.textContent    = pad(s.big);
+    eSmall.textContent  = pad(s.small);
+    eResult.textContent = pad(s.result);
+    hintEl.innerHTML    = `<span>↓ ${s.desc}</span><span>↑ ${s.asc}</span>`;
+
+    await animateIn(equation);
+    await sleep(520);
+  }
+
+  await sleep(120);
+  equation.style.display = 'none';
+  hintEl.style.display = 'none';
+
+  if (steps[steps.length - 1].result === 6174) {
+    winCyc.textContent = `${total} cycle${total === 1 ? '' : 's'} from ${num}`;
+    winEl.style.display = 'block';
+  } else {
+    noconv.style.display = 'block';
+    noconv.textContent = `did not converge to 6174 from ${num}`;
+  }
+
+  btn.disabled = false;
+}
+
+btn.addEventListener('click', run);
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+</script>
+</body>
+</html>
