@@ -249,7 +249,7 @@ body {
 
 /* fade transition */
 .eq-fade {
-  animation: eq-in 0.3s ease forwards;
+  animation: eq-in 0.55s ease forwards;
 }
 @keyframes eq-in {
   from { opacity: 0; transform: translateY(6px); }
@@ -486,7 +486,7 @@ async function run() {
     hintEl.innerHTML    = `<span>↓ ${s.desc}</span><span>↑ ${s.asc}</span>`;
 
     await animateIn(equation);
-    await sleep(520);
+    await sleep(1100);
   }
 
   await sleep(120);
